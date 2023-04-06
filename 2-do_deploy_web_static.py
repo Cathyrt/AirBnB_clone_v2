@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-""" Fabric script that compress web static package"""
+""" 
+Fabric script that compress web static package
+"""
 from fabric.api import *
 import os
 from datetime import datetime

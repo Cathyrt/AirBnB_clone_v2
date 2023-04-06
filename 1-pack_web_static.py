@@ -8,7 +8,6 @@ from datetime import datetime
 
 def do_pack():
     """Create a compressed archive of the web_static folder"""
-    
     try:
         local("mkdir -p versions")
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")

@@ -2,7 +2,6 @@
 """
 Fabric script that creates and distributes an archive to web servers
 """
-
 from fabric.api import *
 from os.path import exists
 from datetime import datetime
@@ -11,9 +10,7 @@ env.hosts = ['52.90.13.53', '52.91.131.227']
 env.user = 'ubuntu'
 
 def do_pack():
-    """
-    Compress files into a .tgz archive
-    """
+    """Compress files into a .tgz archive."""
     try:
         if not exists("versions"):
             local("mkdir versions")
@@ -25,9 +22,7 @@ def do_pack():
         return None
 
 def do_deploy(archive_path):
-    """
-    Distribute archive to web servers
-    """
+    """Distribute archive to web servers."""
     if not exists(archive_path):
         return False
     try:
@@ -46,9 +41,7 @@ def do_deploy(archive_path):
         return False
 
 def deploy():
-    """
-    Create and distribute archive to web servers
-    """
+    """Create and distribute archive to web servers"""
     archive_path = do_pack()
     if archive_path is None:
         return False
