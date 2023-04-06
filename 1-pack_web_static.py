@@ -1,10 +1,13 @@
 #!/usr/bin/python3
- """ Generate a .tgz archive from the contents of the web_static folder."""
+""" 
+Generate a .tgz archive from the contents of the web_static folder.
+"""
 from fabric.api import local
 from datetime import datetime
 
 
 def do_pack():
+    """Create a compressed archive of the web_static folder"""
     
     try:
         local("mkdir -p versions")
