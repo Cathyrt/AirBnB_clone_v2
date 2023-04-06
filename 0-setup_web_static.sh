@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 #this bash script installs, configures and sets up  web servers for the deployment of web_static .
-if ! command -v nginx &> /dev/null
-then
-    sudo apt-get update
-    sudo apt-get install -y nginx
-fi
+sudo apt update -y
+sudo apt install nginx -y
+sudo ufw allow 'Nginx HTTP'
 
 # Create necessary directories if they don't exist
-sudo mkdir -p /data/web_static/releases/test /data/web_static/shared /data/web_static/current
+sudo mkdir -p /data/web_static/releases/test 
+sudo mkdir -p /data/web_static/shared 
 
 # Create a fake HTML file for testing
 echo "<html><head></head><body>Holberton School</body></html>" | sudo tee /data/web_static/releases/test/index.html
