@@ -10,6 +10,7 @@ from fabric.api import *
 env.hosts = ['52.90.13.53', '52.91.131.227']
 env.user = "ubuntu"
 
+
 def do_clean(number=0):
     """Delete out-of-date archives"""
     number = int(number)
