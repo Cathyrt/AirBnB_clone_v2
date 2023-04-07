@@ -1,18 +1,18 @@
 #!/usr/bin/python3
-""" 
+"""
 Fabric script that compress web static package
 """
 from fabric.api import *
 import os
 from datetime import datetime
 
-
 env.user = 'ubuntu'
 env.hosts = ['52.90.13.53', '52.91.131.227']
 env.key_filename = '~/.ssh/school'
 
+
 def do_deploy(archive_path):
-    """ Deploys files to server"""
+    """ Distributes an archive to web servers"""
     if not os.path.exists(archive_path):
         return False
     try:
@@ -29,5 +29,5 @@ def do_deploy(archive_path):
         run("rm -rf /data/web_static/current")
         run("ln -s {} /data/web_static/current".format(archive_folder))
         return True
-    except:
+    except Exception:
         return False
