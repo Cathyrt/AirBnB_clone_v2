@@ -3,15 +3,6 @@ exec { '/usr/bin/env apt -y update' : }
 -> package { 'nginx':
   ensure => installed,
 }
--> file { '/data':
-  ensure  => 'directory'
-}
--> file { '/data/web_static':
-  ensure => 'directory'
-}
--> file { '/data/web_static/releases':
-  ensure => 'directory'
-}
 -> file { '/data/web_static/releases/test':
   ensure => 'directory'
 }
@@ -25,7 +16,7 @@ exec { '/usr/bin/env apt -y update' : }
   <head>
   </head>
   <body>
-    <p>Nginx server test</p>
+    <p>Holberton School</p>
   </body>
 </html>"
 }
@@ -33,30 +24,16 @@ exec { '/usr/bin/env apt -y update' : }
   ensure => 'link',
   target => '/data/web_static/releases/test'
 }
+-> file { '/data':
+  ensure  => 'directory',
+}  
 -> exec { 'chown -R ubuntu:ubuntu /data/':
   path => '/usr/bin/:/usr/local/bin/:/bin/'
 }
--> file { '/var/www':
-  ensure => 'directory'
-}
--> file { '/var/www/html':
-  ensure => 'directory'
-}
--> file { '/var/www/html/index.html':
-  ensure  => 'present',
-  content => "<!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-    <p>Nginx server test</p>
-  </body>
-</html>"
-}
-exec { 'nginx_conf':
-  environment => ['data=\ \tlocation /hbnb_static {\n\t\talias /data/web_static/current;\n\t}\n'],
-  command     => 'sed -i "39i $data" /etc/nginx/sites-enabled/default',
-  path        => '/usr/bin:/usr/sbin:/bin:/usr/local/bin'
+-> file { '/etc/nginx/sites-available/default':
+  content => "server {\n\tlisten 80 default_server;\n\tlisten [::]:80 default_server;\n\n\troot /var/www/html;\n\tindex index.html index.htm index.nginx-debian.html;\n\n\tserver_name _;\n\n\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t}\n}",
+  require => Package['nginx'],
+  notify  => Service['nginx'],
 }
 -> service { 'nginx':
   ensure => running,
