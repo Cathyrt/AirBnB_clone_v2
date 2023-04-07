@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" 
+"""
 Generate a .tgz archive from the contents of the web_static folder.
 """
 from fabric.api import local
@@ -14,7 +14,7 @@ def do_pack():
         archive_path = "versions/web_static_{}.tgz".format(timestamp)
         local("tar -czvf {} web_static".format(archive_path))
 
-        return "versions/versions/web_static_{}.tgz".format (archive_path)
+        return "versions/versions/web_static_{}.tgz".format(archive_path)
 
     except Exception:
         return None
