@@ -9,6 +9,7 @@ from datetime import datetime
 env.hosts = ['52.90.13.53', '52.91.131.227']
 env.user = 'ubuntu'
 
+
 def do_pack():
     """Compress files into a .tgz archive."""
     try:
@@ -18,8 +19,9 @@ def do_pack():
         archive_path = "versions/web_static_{}.tgz".format(timestamp)
         local("tar -cvzf {} web_static".format(archive_path))
         return archive_path
-    except:
+    except Exception:
         return None
+
 
 def do_deploy(archive_path):
     """Distribute archive to web servers."""
@@ -37,8 +39,9 @@ def do_deploy(archive_path):
         run("rm -rf /data/web_static/current")
         run("ln -s {} /data/web_static/current".format(folder_name))
         return True
-    except:
+    except Exception:
         return False
+
 
 def deploy():
     """Create and distribute archive to web servers"""
