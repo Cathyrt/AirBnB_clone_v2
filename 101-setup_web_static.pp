@@ -1,15 +1,23 @@
-# Script that sets up  web servers for the deployment 
-exec { '/usr/bin/env apt -y update' : }
--> package { 'nginx':
+# Install and configures web servers for the deployment of web_static.
+
+exec { 'apt-update':
+  command => '/usr/bin/apt-get update',
+  path    => '/usr/bin:/usr/local/bin:/bin',
+} ->
+
+package { 'nginx':
   ensure => installed,
-}
--> file { '/data/web_static/releases/test':
-  ensure => 'directory'
-}
--> file { '/data/web_static/shared':
-  ensure => 'directory'
-}
--> file { '/data/web_static/releases/test/index.html':
+} ->
+
+file { '/data/web_static/releases/test':
+  ensure => 'directory',
+} ->
+
+file { '/data/web_static/shared':
+  ensure => 'directory',
+} ->
+
+file { '/data/web_static/releases/test/index.html':
   ensure  => 'present',
   content => "<!DOCTYPE html>
 <html>
@@ -18,23 +26,38 @@ exec { '/usr/bin/env apt -y update' : }
   <body>
     <p>Holberton School</p>
   </body>
-</html>"
-}
--> file { '/data/web_static/current':
+</html>",
+} ->
+
+file { '/data/web_static/current':
   ensure => 'link',
-  target => '/data/web_static/releases/test'
-}
--> file { '/data':
-  ensure  => 'directory',
-}  
--> exec { 'chown -R ubuntu:ubuntu /data/':
-  path => '/usr/bin/:/usr/local/bin/:/bin/'
-}
--> file { '/etc/nginx/sites-available/default':
-  content => "server {\n\tlisten 80 default_server;\n\tlisten [::]:80 default_server;\n\n\troot /var/www/html;\n\tindex index.html index.htm index.nginx-debian.html;\n\n\tserver_name _;\n\n\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t}\n}",
+  target => '/data/web_static/releases/test',
+} ->
+
+exec { 'set-data-ownership':
+  command => '/bin/chown -R ubuntu:ubuntu /data',
+  path    => '/usr/bin:/usr/local/bin:/bin',
+} ->
+
+file { '/etc/nginx/sites-available/default':
+  ensure  => 'file',
+  content => "server {
+                listen 80 default_server;
+                listen [::]:80 default_server;
+
+                root /var/www/html;
+                index index.html index.htm index.nginx-debian.html;
+
+                server_name _;
+
+                location /hbnb_static/ {
+                  alias /data/web_static/current/;
+                }
+              }",
   require => Package['nginx'],
   notify  => Service['nginx'],
-}
--> service { 'nginx':
-  ensure => running,
+} ->
+
+service { 'nginx':
+  ensure => 'running',
 }
