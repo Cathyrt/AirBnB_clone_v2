@@ -1,63 +1,70 @@
-# Install and configures web servers for the deployment of web_static.
+# Configure servers for the deployment of web_static
 
-exec { 'apt-update':
+exec { 'update':
   command => '/usr/bin/apt-get update',
-  path    => '/usr/bin:/usr/local/bin:/bin',
 } ->
 
 package { 'nginx':
-  ensure => installed,
+  ensure   => 'present',
+  provider => 'apt'
 } ->
 
-file { '/data/web_static/releases/test':
-  ensure => 'directory',
+file { '/data/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
 } ->
 
-file { '/data/web_static/shared':
-  ensure => 'directory',
+file { '/data/web_static/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
+} ->
+
+file { '/data/web_static/releases/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
+} ->
+
+file { '/data/web_static/shared/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
+} ->
+
+file { '/data/web_static/releases/test/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
 } ->
 
 file { '/data/web_static/releases/test/index.html':
   ensure  => 'present',
-  content => "<!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-    <p>Holberton School</p>
-  </body>
-</html>",
+  path    => '/data/web_static/releases/test/index.html',
+  owner   => 'ubuntu',
+  group   => 'ubuntu',
+  content => "Holberton School Puppet\n",
 } ->
 
 file { '/data/web_static/current':
-  ensure => 'link',
-  target => '/data/web_static/releases/test',
+  ensure  => 'link',
+  replace => 'yes',
+  owner   => 'ubuntu',
+  group   => 'ubuntu',
+  target  => '/data/web_static/releases/test',
 } ->
 
-exec { 'set-data-ownership':
-  command => '/bin/chown -R ubuntu:ubuntu /data',
-  path    => '/usr/bin:/usr/local/bin:/bin',
+exec { 'chown -R ubuntu:ubuntu /data/':
+  path => '/usr/bin/:/usr/local/bin/:/bin/'
 } ->
 
-file { '/etc/nginx/sites-available/default':
-  ensure  => 'file',
-  content => "server {
-                listen 80 default_server;
-                listen [::]:80 default_server;
-
-                root /var/www/html;
-                index index.html index.htm index.nginx-debian.html;
-
-                server_name _;
-
-                location /hbnb_static/ {
-                  alias /data/web_static/current/;
-                }
-              }",
-  require => Package['nginx'],
-  notify  => Service['nginx'],
+exec { 'sed':
+  command => "sed -i \
+  '/^\tlisten 80 default_server;$/i location /hbnb_static/ { alias /data/web_static/current/; }' /etc/nginx/sites-available/default",
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
 } ->
 
-service { 'nginx':
-  ensure => 'running',
+exec { 'nginx restart':
+  path => '/etc/init.d/'
 }
