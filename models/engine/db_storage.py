@@ -89,6 +89,6 @@ class DBStorage:
         DBStorage.__session = sessionmaker(
             bind=DBStorage.__engine, expire_on_commit=False)()
 
-    def close(self):
+     def close(self):
         """Closes the storage engine."""
         self.__session.close()
